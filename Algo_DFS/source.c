@@ -10,6 +10,14 @@
 #define STOP {}
 #endif
 
+//  C++에는 bool이 있고 C에는 bool이없는것을 고려.
+#ifndef __cplusplus
+typedef int bool;
+#define true   1
+#define false 0
+#endif
+
+
 struct node {
 	node * link;
 	int number;
@@ -64,9 +72,11 @@ node ** createTable(int quanity){
 }
 
 void lincleLink(node ** table, int from, int dest) {
-	if (table == NULL || from == dest )goto Exception;
+	if (table == NULL )goto Exception;
+	
+	//  자기자신이 from, dest인 입력은 한번만 수행
 	insertNode(table, from, dest);
-	insertNode(table, dest, from);
+	if (from != dest) insertNode(table, dest, from);
 
 	return;
 Exception:
@@ -74,9 +84,34 @@ Exception:
 	return;
 }
 
-void DFS(int * sharedLog, int	nodeAmount, node ** table, node ) {
+void checkLogSlot(bool * sharedLog, int nodeAmount, int target) {
+	int ii;
+	ii = 0;
+	if (sharedLog[ii] != 0) {
+		return 0;
+	}
+
+}
 
 
+void DFS(bool * sharedLog, int	nodeAmount, node ** table, node * seek) {
+	node * temp = seek;
+	int ii = 0;
+	while (temp != NULL) {
+		if (sharedLog[temp->number] == 0) {
+			//  로깅1회함
+			sharedLog[temp->number] = 1;
+			printf("%d", seek->number);
+			DFS(sharedLog, nodeAmount, table, seek);
+
+		}
+		else if (sharedLog[temp->number != 0]) {
+			// nothing to do.
+		}
+
+		//  다음으로
+		temp = temp->link;
+	}
 }
 
 
