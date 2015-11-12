@@ -1,7 +1,7 @@
-#include <stdio.h>
+ï»¿#include <stdio.h>
 #include <stdlib.h>
 
-//   VISUAL STUDIO ÄÚµù¿ë
+//   VISUAL STUDIO ì½”ë”©ìš©
 #if _MSC_VER >= 1600
 #pragma warning(disable:4996)
 #include <Windows.h>
@@ -10,7 +10,7 @@
 #define STOP {}
 #endif
 
-//  C++¿¡´Â boolÀÌ ÀÖ°í C¿¡´Â boolÀÌ¾ø´Â°ÍÀ» °í·Á.
+//  C++ì—ëŠ” boolì´ ìžˆê³  Cì—ëŠ” boolì´ì—†ëŠ”ê²ƒì„ ê³ ë ¤.
 #ifndef __cplusplus
 typedef int bool;
 #define true   1
@@ -74,7 +74,7 @@ node ** createTable(int quanity){
 void lincleLink(node ** table, int from, int dest) {
 	if (table == NULL )goto Exception;
 	
-	//  ÀÚ±âÀÚ½ÅÀÌ from, destÀÎ ÀÔ·ÂÀº ÇÑ¹ø¸¸ ¼öÇà
+	//  ìžê¸°ìžì‹ ì´ from, destì¸ ìž…ë ¥ì€ í•œë²ˆë§Œ ìˆ˜í–‰
 	insertNode(table, from, dest);
 	if (from != dest) insertNode(table, dest, from);
 
@@ -99,7 +99,7 @@ void DFS(bool * sharedLog, int	nodeAmount, node ** table, node * seek) {
 	int ii = 0;
 	while (temp != NULL) {
 		if (sharedLog[temp->number] == 0) {
-			//  ·Î±ë1È¸ÇÔ
+			//  ë¡œê¹…1íšŒí•¨
 			sharedLog[temp->number] = 1;
 			printf("%d", seek->number);
 			DFS(sharedLog, nodeAmount, table, seek);
@@ -109,7 +109,7 @@ void DFS(bool * sharedLog, int	nodeAmount, node ** table, node * seek) {
 			// nothing to do.
 		}
 
-		//  ´ÙÀ½À¸·Î
+		//  ë‹¤ìŒìœ¼ë¡œ
 		temp = temp->link;
 	}
 }
