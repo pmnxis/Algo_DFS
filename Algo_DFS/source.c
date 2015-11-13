@@ -1,6 +1,5 @@
 ﻿#include <stdio.h>
 #include <stdlib.h>
-int logcount = 0;
 
 //   VISUAL STUDIO 코딩용
 #if _MSC_VER >= 1600
@@ -123,50 +122,58 @@ void inputRule(node ** table) {
 	lincleLink(table, left, right);
 }
 
-void DFS(bool * sharedLog, int	nodeAmount, node ** table, node * seek) {
-	node * temp = seek;
-	int ii = 0;
-	while (temp != NULL) {
-		if (sharedLog[temp->number] == 0) {
-			//  로깅1회함
-			sharedLog[temp->number] = 1;
-			printf("%d", seek->number);
-			DFS(sharedLog, nodeAmount, table, seek);
+void log(int input) {
+	if (input > 0)printf("%d", input);
+	else printf(" ");
+}
 
-		}
-		else if (sharedLog[temp->number != 0]) {
-			// nothing to do.
-		}
+void DFS(bool * sharedLog, node ** table, int row) {
+	/*
+		WIP
+	*/
+}
 
-		//  다음으로
-		temp = temp->link;
+
+void BFS(bool * sharedLog, node ** table, int row) {
+	node * seek = table[row];
+	int i = 0;
+
+	log(row);
+	sharedLog[row] = 1;
+
+	while (1) {
+		if (seek == NULL)return;
+
+		if (sharedLog[seek->number] == 0) {
+			log(-1);
+			BFS(sharedLog, table, seek->number);
+		}
+		seek = seek->link;
 	}
 }
 
-void debug(node ** table, int nodeAmount) {
-	logcount = 0;
-	int i = 0;
+void logTable(node ** table, int nodeAmount) {
+	int logcount, i;
 	node * temp;
+	printf(" --- Adjacency List ---");
 	for (i = 1; i < nodeAmount + 1; i++) {
 		printf("\ntable [ %d ] -", i);
 		temp = table[i];
 		if (table == NULL) {
 			continue;
 		}
+		logcount = 0;
 		while (temp != NULL) {
 			printf(" -> %d", temp->number);
 			logcount++;
-			if (logcount > 2000) {
+			if (logcount > nodeAmount+2) {
 				printf("loopproblem;\n");
-				
 			}
 			temp = temp->link;
 		}
-
 	}
-	printf("\n");
+	printf("\n\n");
 }
-
 
 int main(){
 	int i = 0, inputAmount = 0 ,TableWidth = 0, EnterNodeNumber = 0;
@@ -180,9 +187,10 @@ int main(){
 	table = createTable(TableWidth);
 	for (i = 0; i < inputAmount; i++) {
 		inputRule(table);
-		//debug(table, TableWidth);
 	}
-	DFS(sharedLog, inputAmount, table, table[EnterNodeNumber]);
+	logTable(table, TableWidth);
+	BFS(sharedLog, table, EnterNodeNumber);
+	DFS(sharedLog, table, EnterNodeNumber);
 		STOP
 	return 0;
 }
