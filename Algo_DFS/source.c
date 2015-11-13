@@ -19,7 +19,7 @@ typedef int bool;
 
 
 struct node {
-	node * link;
+	struct node * link;
 	int number;
 }typedef node;
 
@@ -30,7 +30,7 @@ node * makeNode(int _number) {
 	return temp;
 }
 
-node * insertNode(node ** table, int _axis, int _number) {
+void * insertNode(node ** table, int _axis, int _number) {
 	int ii;
 	node * seek,  * preseek;
 	node * newElement = makeNode(_number);
@@ -60,6 +60,15 @@ node * insertNode(node ** table, int _axis, int _number) {
 			}
 		}
 	}
+}
+
+int * createSharedLog(int quanity) {
+	int ii;
+	int * sharedLog = (int *)malloc(sizeof(int)*(quanity + 1));
+	for (ii = 0; ii <= quanity; ii++) {
+		sharedLog[ii] = 0;
+	}
+	return sharedLog;
 }
 
 node ** createTable(int quanity){
@@ -95,7 +104,7 @@ void checkLogSlot(bool * sharedLog, int nodeAmount, int target) {
 
 void inputRule(node ** table) {
 	int left, right;
-	scanf("%d %d", &left, right);
+	scanf("%d %d", &left, &right);
 	lincleLink(table, left, right);
 }
 
@@ -122,13 +131,16 @@ void DFS(bool * sharedLog, int	nodeAmount, node ** table, node * seek) {
 
 int main(){
 	int i = 0, inputAmount = 0 ,TableWidth = 0, EnterNodeNumber = 0;
+	node ** table;
+	int * sharedLog;
 	scanf("%d", &TableWidth);
 	scanf("%d", &inputAmount);
 	scanf("%d", &EnterNodeNumber);
 
-	node ** table = createTable(TableWidth);
+	sharedLog = createSharedLog(TableWidth);
+	table = createTable(TableWidth);
 	for (i = 0; i < inputAmount; EnterNodeNumber) inputRule(table);
-
-
+	DFS(sharedLog, inputAmount, table, table[EnterNodeNumber]);
+	
 	return 0;
 }
