@@ -41,6 +41,7 @@ void * insertNode(node ** table, int _axis, int _number) {
 		preseek = NULL;
 		seek = table[_axis];
 		while (1) {
+			// error at under
 			if (seek->number == _number)return;
 			else if ((seek->number) < _number){
 				preseek = seek;
