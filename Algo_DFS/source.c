@@ -40,7 +40,7 @@ void * insertNode(node ** table, int _axis, int _number) {
 	else {
 		preseek = NULL;
 		seek = table[_axis];
-		while (1) {
+		while (seek != NULL) {
 			// error at under
 			if (seek->number == _number)return;
 			else if ((seek->number) < _number){
@@ -63,9 +63,9 @@ void * insertNode(node ** table, int _axis, int _number) {
 	}
 }
 
-int * createSharedLog(int quanity) {
+bool * createSharedLog(int quanity) {
 	int ii;
-	int * sharedLog = (int *)malloc(sizeof(int)*(quanity + 1));
+	bool * sharedLog = (bool *)malloc(sizeof(int)*(quanity + 1));
 	for (ii = 0; ii <= quanity; ii++) {
 		sharedLog[ii] = 0;
 	}
@@ -129,19 +129,38 @@ void DFS(bool * sharedLog, int	nodeAmount, node ** table, node * seek) {
 	}
 }
 
+void debug(node ** table, int nodeAmount) {
+	int i = 0;
+	node * temp;
+	for (i = 1; i < nodeAmount + 1; i++) {
+		printf("\ntable [ %d ] -", i);
+		temp = table[i];
+		if (table == NULL) {
+			continue;
+		}
+		while (temp != NULL) {
+			printf(" -> %d", temp->number);
+			temp = temp->link;
+		}
+
+	}
+
+}
+
 
 int main(){
 	int i = 0, inputAmount = 0 ,TableWidth = 0, EnterNodeNumber = 0;
 	node ** table;
-	int * sharedLog;
+	bool * sharedLog;
 	scanf("%d", &TableWidth);
 	scanf("%d", &inputAmount);
 	scanf("%d", &EnterNodeNumber);
 
 	sharedLog = createSharedLog(TableWidth);
 	table = createTable(TableWidth);
-	for (i = 0; i < inputAmount; EnterNodeNumber) inputRule(table);
+	for (i = 0; i < inputAmount; i++) inputRule(table);
+	debug(table, TableWidth);
 	DFS(sharedLog, inputAmount, table, table[EnterNodeNumber]);
-	
+		STOP
 	return 0;
 }

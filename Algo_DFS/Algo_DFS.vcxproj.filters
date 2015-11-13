@@ -19,4 +19,8 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="test-case1.txt" />
+    <Text Include="test-case2.txt" />
+  </ItemGroup>
 </Project>
