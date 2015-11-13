@@ -1,5 +1,6 @@
 ﻿#include <stdio.h>
 #include <stdlib.h>
+int logcount = 0;
 
 //   VISUAL STUDIO 코딩용
 #if _MSC_VER >= 1600
@@ -30,43 +31,56 @@ node * makeNode(int _number) {
 	return temp;
 }
 
-void * insertNode(node ** table, int _axis, int _number) {
+void  insertNode(node ** table, int _axis, int _number) {
 	int ii;
 	node * seek,  * preseek;
 	node * newElement = makeNode(_number);
-	if (table[_axis] == NULL) {
-		table[_axis] = newElement;
-	}
-	else {
-		preseek = NULL;
-		seek = table[_axis];
-		while (seek != NULL) {
-			// error at under
-			if (seek->number == _number)return;
-			else if ((seek->number) < _number){
-				preseek = seek;
-				seek = seek->link;
-			}
-			else if(seek->number > _number){
-				if (preseek == NULL) {
-					preseek = newElement;
-					newElement->link = seek;
-					table[_axis] = preseek;
-				}
-				else {
-					preseek->link = newElement;
-					preseek->link->link = seek;
-				}
-				return;
-			}
+
+	preseek = NULL;
+	seek = table[_axis];
+
+
+	while (1) {
+
+		if (seek == NULL && preseek == NULL) {
+			//table[_axis] = newElement;
+			table[_axis] = newElement;
+			return;
+		}
+
+		if (seek == NULL && preseek != NULL) {
+			preseek->link = newElement;
+			return;
+		}
+
+		if (seek->number == _number)return;
+
+
+		if (seek->number < _number) {
+			preseek = seek;
+			seek = seek->link;
+			continue;
+		}
+		if (seek->number > _number && preseek == NULL) {
+			newElement->link = seek;
+			table[_axis] = newElement;
+			return;
+
+		}
+		if (seek->number > _number) {
+			newElement->link = seek;
+			preseek->link = newElement;
+			return;
 		}
 	}
+	
 }
 
 bool * createSharedLog(int quanity) {
 	int ii;
 	bool * sharedLog = (bool *)malloc(sizeof(int)*(quanity + 1));
 	for (ii = 0; ii <= quanity; ii++) {
+
 		sharedLog[ii] = 0;
 	}
 	return sharedLog;
@@ -130,6 +144,7 @@ void DFS(bool * sharedLog, int	nodeAmount, node ** table, node * seek) {
 }
 
 void debug(node ** table, int nodeAmount) {
+	logcount = 0;
 	int i = 0;
 	node * temp;
 	for (i = 1; i < nodeAmount + 1; i++) {
@@ -140,11 +155,16 @@ void debug(node ** table, int nodeAmount) {
 		}
 		while (temp != NULL) {
 			printf(" -> %d", temp->number);
+			logcount++;
+			if (logcount > 2000) {
+				printf("loopproblem;\n");
+				
+			}
 			temp = temp->link;
 		}
 
 	}
-
+	printf("\n");
 }
 
 
@@ -158,8 +178,10 @@ int main(){
 
 	sharedLog = createSharedLog(TableWidth);
 	table = createTable(TableWidth);
-	for (i = 0; i < inputAmount; i++) inputRule(table);
-	debug(table, TableWidth);
+	for (i = 0; i < inputAmount; i++) {
+		inputRule(table);
+		//debug(table, TableWidth);
+	}
 	DFS(sharedLog, inputAmount, table, table[EnterNodeNumber]);
 		STOP
 	return 0;
