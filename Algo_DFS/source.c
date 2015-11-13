@@ -93,6 +93,11 @@ void checkLogSlot(bool * sharedLog, int nodeAmount, int target) {
 
 }
 
+void inputRule(node ** table) {
+	int left, right;
+	scanf("%d %d", &left, right);
+	lincleLink(table, left, right);
+}
 
 void DFS(bool * sharedLog, int	nodeAmount, node ** table, node * seek) {
 	node * temp = seek;
@@ -116,8 +121,13 @@ void DFS(bool * sharedLog, int	nodeAmount, node ** table, node * seek) {
 
 
 int main(){
-	
+	int i = 0, inputAmount = 0 ,TableWidth = 0, EnterNodeNumber = 0;
+	scanf("%d", &TableWidth);
+	scanf("%d", &inputAmount);
+	scanf("%d", &EnterNodeNumber);
 
+	node ** table = createTable(TableWidth);
+	for (i = 0; i < inputAmount; EnterNodeNumber) inputRule(table);
 
 
 	return 0;
