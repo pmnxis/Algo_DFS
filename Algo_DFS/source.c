@@ -187,9 +187,9 @@ node * getDFSpriority(bool * sharedLog, int * DepthTrack, node ** table, int row
 
 		if (currentMinDist == -1) goto deferredFunc;
 
-		if (currentMinDist > DepthTrack[seek->number]) goto deferredFunc;
+		if (currentMinDist >= DepthTrack[seek->number] && currentMinNum > seek->number) goto deferredFunc;
 
-		if (currentMinDist > DepthTrack[seek->number] && currentMinNum > seek->number) goto deferredFunc;
+		if (currentMinDist > DepthTrack[seek->number]) goto deferredFunc;
 
 		seek = seek->link; continue;
 
