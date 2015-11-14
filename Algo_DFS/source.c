@@ -56,7 +56,7 @@ int main(){
 		inputRule(table);
 	}
 	//  (bool * sharedLog, node ** table, int nodeAmount, int StartPoint) 
-	logTable(table, TableWidth);
+	//logTable(table, TableWidth);
 	startDFScustom(sharedLog, table, TableWidth, EnterNodeNumber);
 //	BFS(sharedLog, table, EnterNodeNumber);
 //	DFS(sharedLog, table, EnterNodeNumber);
@@ -162,7 +162,7 @@ void setDFSpriority(bool * sharedLog, int * DepthTrack, node ** table, int row) 
 	int currentDist;
 
 	seek = table[row];
-	currentDist = sharedLog[row];
+	currentDist = DepthTrack[row];
 	while (1) {
 		if (seek == NULL)break;
 		if (sharedLog[seek->number] == 0 && DepthTrack[seek->number] == -1)	DepthTrack[seek->number] = currentDist + 1;
@@ -199,7 +199,8 @@ node * getDFSpriority(bool * sharedLog, int * DepthTrack, node ** table, int row
 		currentMinDist = DepthTrack[seek->number];
 		currentMinNum = seek->number;
 		currentMin = seek;
-		seek = seek->link; continue;
+		seek = seek->link;
+		continue;
 		//  DEFERRED END
 	}
 	//  while end
@@ -216,6 +217,7 @@ void startDFScustom(bool * sharedLog, node ** table, int nodeAmount, int StartPo
 	}
 	DepthTrack[StartPoint] = 0;
 	DFScustom(sharedLog, DepthTrack, table, StartPoint);
+	//for (ii = 0; ii <= nodeAmount; ii++)printf("\n%d  - %d", ii, DepthTrack[ii]);
 	return;
 }
 
@@ -236,11 +238,12 @@ void DFScustom(bool * sharedLog, int * DepthTrack, node ** table, int row) {
 		if (seek == NULL)return;
 
 		newPortal = getDFSpriority(sharedLog, DepthTrack, table, row);
-		if (sharedLog[seek->number] == 0) {
+		if (newPortal == NULL)return;
+
+		if (sharedLog[newPortal->number] == 0){
 			log(-1);
 			DFScustom(sharedLog, DepthTrack, table, newPortal->number);
 		}
-		seek = seek->link;
 	}
 	return;
 }
