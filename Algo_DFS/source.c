@@ -232,15 +232,14 @@ void DFScustom(bool * sharedLog, int * DepthTrack, node ** table, int row) {
 	setDFSpriority(sharedLog, DepthTrack, table, row);
 
 	seek = table[row];
+	if (seek == NULL)return;
 	while (1) {
-		if (seek == NULL)return;
-
 		newPortal = getDFSpriority(sharedLog, DepthTrack, table, row);
 		if (sharedLog[seek->number] == 0) {
 			log(-1);
 			DFScustom(sharedLog, DepthTrack, table, newPortal->number);
 		}
-		seek = seek->link;
+		if (newPortal == NULL)return;
 	}
 	return;
 }
