@@ -40,7 +40,8 @@ void startDFScustom(bool * sharedLog, node ** table, int nodeAmount, int StartPo
 void DFScustom(bool * sharedLog, int * DepthTrack, node ** table, int row);
 void DFS_origin(bool * sharedLog, node ** table, int row);
 void logTable(node ** table, int nodeAmount);
-
+void nodeTableDestructor(node ** table, int nodeAmount);
+void nodeChainDestructor(node * target);
 
 int main(){
 	int i = 0, inputAmount = 0 ,TableWidth = 0, EnterNodeNumber = 0;
@@ -60,6 +61,10 @@ int main(){
 	startDFScustom(sharedLog, table, TableWidth, EnterNodeNumber);
 //	BFS(sharedLog, table, EnterNodeNumber);
 //	DFS(sharedLog, table, EnterNodeNumber);
+
+	nodeTableDestructor(table, TableWidth);
+	free(sharedLog);
+
 		STOP
 	return 0;
 }
@@ -92,7 +97,10 @@ void  insertNode(node ** table, int _axis, int _number) {
 			return;
 		}
 
-		if (seek->number == _number)return;
+		if (seek->number == _number) { 
+			free(newElement);
+			return;
+		}
 
 		if (seek->number < _number) {
 			preseek = seek;
@@ -218,6 +226,7 @@ void startDFScustom(bool * sharedLog, node ** table, int nodeAmount, int StartPo
 	DepthTrack[StartPoint] = 0;
 	DFScustom(sharedLog, DepthTrack, table, StartPoint);
 	//for (ii = 0; ii <= nodeAmount; ii++)printf("\n%d  - %d", ii, DepthTrack[ii]);
+	free(DepthTrack);
 	return;
 }
 
@@ -234,19 +243,17 @@ void DFScustom(bool * sharedLog, int * DepthTrack, node ** table, int row) {
 	setDFSpriority(sharedLog, DepthTrack, table, row);
 
 	seek = table[row];
-	if (seek == NULL)return;
 	while (1) {
+		if (seek == NULL)return;
+
 		newPortal = getDFSpriority(sharedLog, DepthTrack, table, row);
 		if (newPortal == NULL)return;
 
 		if (sharedLog[newPortal->number] == 0){
 			log(-1);
 			DFScustom(sharedLog, DepthTrack, table, newPortal->number);
+			continue;
 		}
-<<<<<<< HEAD
-		if (newPortal == NULL)return;
-=======
->>>>>>> origin/master
 	}
 	return;
 }
@@ -290,4 +297,17 @@ void logTable(node ** table, int nodeAmount) {
 		}
 	}
 	printf("\n\n");
+}
+
+void nodeTableDestructor(node ** table, int nodeAmount) {
+	int ii;
+	for (ii = 0; ii <= nodeAmount; ii++) nodeChainDestructor(table[ii]);
+}
+
+void nodeChainDestructor(node * target) {
+	if (target == NULL)return;
+	else{
+		nodeChainDestructor(target->link);
+		free(target);
+	}
 }
