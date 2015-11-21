@@ -75,7 +75,7 @@ int main() {
 	
 	STOP
 		return 0;
-	advancedLog(NULL);
+	fclose(fp);
 }
 
 node * makeNode(int _number) {
@@ -182,9 +182,11 @@ void setDFSpriority(bool * sharedLog, int * DepthTrack, node ** table, int row) 
 	currentDist = DepthTrack[row];
 	while (1) {
 		if (seek == NULL)break;
+		/*
 		if (sharedLog[seek->number == 0] && DepthTrack[seek->number] != -1) {
 			if (currentDist + 1 < DepthTrack[seek->number])DepthTrack[seek->number] = currentDist + 1;
 		}
+		*/
 		else if (sharedLog[seek->number] == 0 && DepthTrack[seek->number] == -1)	DepthTrack[seek->number] = currentDist + 1;
 		seek = seek->link;
 
@@ -207,14 +209,24 @@ node * getDFSpriority(bool * sharedLog, int * DepthTrack, node ** table, int row
 		//  이미 탐색한 항목으로 선정대상에서 제외.
 		if (sharedLog[seek->number] != 0) { seek = seek->link; continue; }
 
-		if (currentMinDist == -1) goto deferredFunc;
+		// instead of setDFSPriority 
 
-		if (currentMinDist >= DepthTrack[seek->number] && currentMinNum > seek->number) goto deferredFunc;
+		/*
+		if (DepthTrack[seek->number] == -1)DepthTrack[seek->number] = DepthTrack[row] + 1;
+		else if (DepthTrack[seek->number] != -1 && DepthTrack[seek->number] > DepthTrack[row] + 1)DepthTrack[seek->number] = DepthTrack[row] + 1;
+		*/
 
-		if (currentMinDist > DepthTrack[seek->number]) goto deferredFunc;
+		// end
 
-		seek = seek->link; continue;
+		if (currentMinDist == -1 && currentMinNum == -1) goto deferredFunc;
+		else if (currentMinDist > DepthTrack[seek->number]) goto deferredFunc;
+		else if (currentMinDist = DepthTrack[seek->number] && currentMinNum > seek->number) goto deferredFunc;
 
+
+		else{
+		seek = seek->link;
+		continue;
+		}
 		//  Go Lang에서 Defer이라는게 있길래 한번 분기 이름으로 써봄
 		//  DEFERRED Part
 	deferredFunc:
@@ -227,12 +239,13 @@ node * getDFSpriority(bool * sharedLog, int * DepthTrack, node ** table, int row
 	}
 	//  while end
 
-	if (currentMinDist == -1 || currentMinNum == -1)return NULL;
+	if (currentMinDist == -1 && currentMinNum == -1)return NULL;
 	else return currentMin;
 }
 
 void startDFScustom(bool * sharedLog, node ** table, int nodeAmount, int StartPoint) {
 	int ii;
+	logTable(table, nodeAmount);
 	bool * DepthTrack = (int *)malloc(sizeof(int)*(nodeAmount + 1));
 	for (ii = 0; ii <= nodeAmount; ii++) {
 		DepthTrack[ii] = -1;
@@ -267,7 +280,9 @@ void DFScustom(bool * sharedLog, int * DepthTrack, node ** table, int row) {
 	while (1) {
 		if (seek == NULL)return;
 
-		//setDFSpriority(sharedLog, DepthTrack, table, row);
+
+
+		setDFSpriority(sharedLog, DepthTrack, table, row);
 		newPortal = getDFSpriority(sharedLog, DepthTrack, table, row);
 		if (newPortal == NULL)return;
 
@@ -300,29 +315,29 @@ void DFS_origin(bool * sharedLog, node ** table, int row) {
 
 void logTable(node ** table, int nodeAmount) {
 	int logcount, i;
-	char buff[1000];
+	//  char buff[1000];
 	node * temp;
-	advancedLog(" --- Adjacency List ---");
+	//advancedLog(" --- Adjacency List ---");
+	fprintf(fp," --- Adjacency List ---");
 	for (i = 1; i < nodeAmount + 1; i++) {
-		sprintf(buff, "\ntable [ %d ] -", i);
-		advancedLog(buff);
+		fprintf(fp, "\ntable [ %d ] -", i);
+		//advancedLog(buff);
 		temp = table[i];
 		if (table == NULL) {
 			continue;
 		}
 		logcount = 0;
 		while (temp != NULL) {
-			sprintf(buff, " -> %d", temp->number);
-			advancedLog(buff);
+			fprintf(fp, "\t%d", temp->number);
+			
 			logcount++;
 			if (logcount > nodeAmount + 2) {
-				sprintf(buff,"loopproblem;\n");
-				advancedLog(buff);
+				fprintf(fp, "loopproblem;\n");
 			}
 			temp = temp->link;
 		}
 	}
-	advancedLog("\n\n");
+	fprintf(fp, "\n\n");
 }
 
 void nodeTableDestructor(node ** table, int nodeAmount) {
