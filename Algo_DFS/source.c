@@ -42,6 +42,11 @@ void DFS_origin(bool * sharedLog, node ** table, int row);
 void logTable(node ** table, int nodeAmount);
 void nodeTableDestructor(node ** table, int nodeAmount);
 void nodeChainDestructor(node * target);
+node ** createQue(int row);
+void enqueue(node ** table, int row, int val);
+int dequeue(node ** table, int row);
+int * CreateDistTable_BFS(node ** table, int nodeAmount, int StartPoint);
+void routineBFS(node ** table, int * DepthTrack, bool * sharedLog, int row);
 
 int main(){
 	int i = 0, inputAmount = 0 ,TableWidth = 0, EnterNodeNumber = 0;
@@ -219,11 +224,16 @@ node * getDFSpriority(bool * sharedLog, int * DepthTrack, node ** table, int row
 
 void startDFScustom(bool * sharedLog, node ** table, int nodeAmount, int StartPoint) {
 	int ii;
-	bool * DepthTrack = (int *)malloc(sizeof(int)*(nodeAmount + 1));
+	/*
+	int * DepthTrack = (int *)malloc(sizeof(int)*(nodeAmount + 1));
 	for (ii = 0; ii <= nodeAmount; ii++) {
 		DepthTrack[ii] = -1;
 	}
-	DepthTrack[StartPoint] = 0;
+	*/
+
+	//  int * CreateDistTable_BFS(node ** table, int nodeAmount, int StartPoint)
+
+	int * DepthTrack = CreateDistTable_BFS(table, nodeAmount, StartPoint);
 	DFScustom(sharedLog, DepthTrack, table, StartPoint);
 	//for (ii = 0; ii <= nodeAmount; ii++)printf("\n%d  - %d", ii, DepthTrack[ii]);
 	free(DepthTrack);
@@ -243,7 +253,7 @@ void DFScustom(bool * sharedLog, int * DepthTrack, node ** table, int row) {
 	seek = table[row];
 	currentDist = sharedLog[row];
 
-	setDFSpriority(sharedLog, DepthTrack, table, row);
+	// setDFSpriority(sharedLog, DepthTrack, table, row);
 
 	seek = table[row];
 	while (1) {
@@ -315,6 +325,15 @@ void nodeChainDestructor(node * target) {
 	}
 }
 
+node ** createQue(int row) {
+	int ii;
+	node ** temp = (node **)malloc(sizeof(node *)*(row + 1));
+	for (ii = 0; ii <= row; ii++) {
+		temp[ii] = NULL;
+	}
+	return temp;
+}
+
 void enqueue(node ** table, int row, int val) {
 	node * seek;
 	node * newElement = makeNode(val);
@@ -324,6 +343,7 @@ void enqueue(node ** table, int row, int val) {
 		return;
 	}
 	else {
+		seek = table[row];
 		while (seek != NULL) {
 			if (seek->link == NULL) {
 				seek->link = newElement;
@@ -334,4 +354,53 @@ void enqueue(node ** table, int row, int val) {
 			}
 		}
 	}
+}
+
+int dequeue(node ** table, int row) {
+	node * newFront;
+	node * temp;
+	int bye = 0;
+	temp = table[row];
+
+	if (temp == NULL)return 0;
+	temp = table[row];
+	bye = temp->number;
+	table[row] = table[row]->link;
+	free(temp);
+	return bye;
+}
+
+int * CreateDistTable_BFS(node ** table, int nodeAmount, int StartPoint) {
+	int ii;
+	int * DepthTrack = (int *)calloc(1,sizeof(int)*(nodeAmount + 1));
+	bool * sharedLog = (bool * )calloc(1,sizeof(int)*(nodeAmount + 1));
+	for (ii = 0; ii <= nodeAmount; ii++) {
+		DepthTrack[ii] = -1;
+		sharedLog[ii] = 0;
+	}
+	DepthTrack[StartPoint] = 0;
+	routineBFS(table, DepthTrack, sharedLog, StartPoint);
+	free(sharedLog);
+	return DepthTrack;
+}
+
+void routineBFS(node ** table, int * DepthTrack, bool * sharedLog,  int row) {
+	node ** currentQue = createQue(0);
+	node * seek;
+	int currentDist;
+	int gear = 0;
+	
+	sharedLog[row] = 1;
+	seek = table[row];
+	currentDist = DepthTrack[row];
+	while (seek != NULL) {
+		if (DepthTrack[seek->number] == -1 || DepthTrack[seek->number] > currentDist + 1) {
+			DepthTrack[seek->number] = currentDist + 1;
+			enqueue(currentQue, 0, seek->number);
+		}
+		seek = seek->link;
+	}
+
+	while (gear = dequeue(currentQue, 0)) routineBFS(table, DepthTrack, sharedLog, gear);
+	return;
 }
