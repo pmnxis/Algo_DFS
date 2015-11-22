@@ -43,18 +43,10 @@ void logTable(node ** table, int nodeAmount);
 void nodeTableDestructor(node ** table, int nodeAmount);
 void nodeChainDestructor(node * target);
 
-FILE * fp;
-void advancedLog(const char str[]);
-
-
-int main() {
-	int i = 0, inputAmount = 0, TableWidth = 0, EnterNodeNumber = 0;
+int main(){
+	int i = 0, inputAmount = 0 ,TableWidth = 0, EnterNodeNumber = 0;
 	node ** table;
 	bool * sharedLog;
-	// temp 
-	fp = fopen("extraLog.txt", "w");
-	//
-
 	scanf("%d", &TableWidth);
 	scanf("%d", &inputAmount);
 	scanf("%d", &EnterNodeNumber);
@@ -67,15 +59,14 @@ int main() {
 	//  (bool * sharedLog, node ** table, int nodeAmount, int StartPoint) 
 	//logTable(table, TableWidth);
 	startDFScustom(sharedLog, table, TableWidth, EnterNodeNumber);
-	//	BFS(sharedLog, table, EnterNodeNumber);
-	//	DFS(sharedLog, table, EnterNodeNumber);
+//	BFS(sharedLog, table, EnterNodeNumber);
+//	DFS(sharedLog, table, EnterNodeNumber);
 
 	nodeTableDestructor(table, TableWidth);
 	free(sharedLog);
-	
-	STOP
-		return 0;
-	fclose(fp);
+
+		STOP
+	return 0;
 }
 
 node * makeNode(int _number) {
@@ -106,7 +97,7 @@ void  insertNode(node ** table, int _axis, int _number) {
 			return;
 		}
 
-		if (seek->number == _number) {
+		if (seek->number == _number) { 
 			free(newElement);
 			return;
 		}
@@ -182,15 +173,8 @@ void setDFSpriority(bool * sharedLog, int * DepthTrack, node ** table, int row) 
 	currentDist = DepthTrack[row];
 	while (1) {
 		if (seek == NULL)break;
-		/*
-		if (sharedLog[seek->number == 0] && DepthTrack[seek->number] != -1) {
-			if (currentDist + 1 < DepthTrack[seek->number])DepthTrack[seek->number] = currentDist + 1;
-		}
-		*/
-		else if (sharedLog[seek->number] == 0 && DepthTrack[seek->number] == -1)	DepthTrack[seek->number] = currentDist + 1;
+		if (sharedLog[seek->number] == 0 && DepthTrack[seek->number] == -1)	DepthTrack[seek->number] = currentDist + 1;
 		seek = seek->link;
-
-
 	}
 }
 
@@ -209,21 +193,14 @@ node * getDFSpriority(bool * sharedLog, int * DepthTrack, node ** table, int row
 		//  이미 탐색한 항목으로 선정대상에서 제외.
 		if (sharedLog[seek->number] != 0) { seek = seek->link; continue; }
 
-		reattemp:
+		if (currentMinDist == -1) goto deferredFunc;
 
-		// instead of setDFSPriority 
+		if (currentMinDist >= DepthTrack[seek->number] && currentMinNum > seek->number) goto deferredFunc;
 
-		/*
-		if (DepthTrack[seek->number] == -1)DepthTrack[seek->number] = DepthTrack[row] + 1;
-		else if (DepthTrack[seek->number] != -1 && DepthTrack[seek->number] > DepthTrack[row] + 1)DepthTrack[seek->number] = DepthTrack[row] + 1;
-		*/
+		if (currentMinDist > DepthTrack[seek->number]) goto deferredFunc;
 
-		// end
+		seek = seek->link; continue;
 
-		if (sharedLog[seek->number] == 0 &&currentMinDist == -1 && currentMinNum == -1) goto deferredFunc;
-		//  else if (currentMinDist > DepthTrack[seek->number]) goto deferredFunc;
-		else if (currentMinDist >= DepthTrack[seek->number] && currentMinNum >= seek->number) goto deferredFunc;
-		else{		seek = seek->link;		continue;		}
 		//  Go Lang에서 Defer이라는게 있길래 한번 분기 이름으로 써봄
 		//  DEFERRED Part
 	deferredFunc:
@@ -236,13 +213,12 @@ node * getDFSpriority(bool * sharedLog, int * DepthTrack, node ** table, int row
 	}
 	//  while end
 
-	if (currentMinDist == -1 && currentMinNum == -1)return NULL;
+	if (currentMinDist == -1 || currentMinNum == -1)return NULL;
 	else return currentMin;
 }
 
 void startDFScustom(bool * sharedLog, node ** table, int nodeAmount, int StartPoint) {
 	int ii;
-	logTable(table, nodeAmount);
 	bool * DepthTrack = (int *)malloc(sizeof(int)*(nodeAmount + 1));
 	for (ii = 0; ii <= nodeAmount; ii++) {
 		DepthTrack[ii] = -1;
@@ -254,19 +230,15 @@ void startDFScustom(bool * sharedLog, node ** table, int nodeAmount, int StartPo
 	return;
 }
 
-/*
-void markDepthLog(bool * sharedLog, int * DepthTrack, node ** table, int row) {
-node * seek, n
-
-}
-*/
-
 void DFScustom(bool * sharedLog, int * DepthTrack, node ** table, int row) {
 	node * seek, *newPortal;
 	int currentDist;
 
-	log(row);
-	sharedLog[row] = 1;
+	if (sharedLog[row] == 0) { 
+		log(row);
+		sharedLog[row] = 1;
+	}
+	else return;
 
 	seek = table[row];
 	currentDist = sharedLog[row];
@@ -277,13 +249,10 @@ void DFScustom(bool * sharedLog, int * DepthTrack, node ** table, int row) {
 	while (1) {
 		if (seek == NULL)return;
 
-
-
-		setDFSpriority(sharedLog, DepthTrack, table, row);
 		newPortal = getDFSpriority(sharedLog, DepthTrack, table, row);
 		if (newPortal == NULL)return;
-
-		if (sharedLog[newPortal->number] == 0) {
+		//  else if (sharedLog[newPortal->number] == 0){
+		else{
 			log(-1);
 			DFScustom(sharedLog, DepthTrack, table, newPortal->number);
 			continue;
@@ -312,29 +281,25 @@ void DFS_origin(bool * sharedLog, node ** table, int row) {
 
 void logTable(node ** table, int nodeAmount) {
 	int logcount, i;
-	//  char buff[1000];
 	node * temp;
-	//advancedLog(" --- Adjacency List ---");
-	fprintf(fp," --- Adjacency List ---");
+	printf(" --- Adjacency List ---");
 	for (i = 1; i < nodeAmount + 1; i++) {
-		fprintf(fp, "\ntable [ %d ] -", i);
-		//advancedLog(buff);
+		printf("\ntable [ %d ] -", i);
 		temp = table[i];
 		if (table == NULL) {
 			continue;
 		}
 		logcount = 0;
 		while (temp != NULL) {
-			fprintf(fp, "\t%d", temp->number);
-			
+			printf(" -> %d", temp->number);
 			logcount++;
 			if (logcount > nodeAmount + 2) {
-				fprintf(fp, "loopproblem;\n");
+				printf("loopproblem;\n");
 			}
 			temp = temp->link;
 		}
 	}
-	fprintf(fp, "\n\n");
+	printf("\n\n");
 }
 
 void nodeTableDestructor(node ** table, int nodeAmount) {
@@ -344,13 +309,29 @@ void nodeTableDestructor(node ** table, int nodeAmount) {
 
 void nodeChainDestructor(node * target) {
 	if (target == NULL)return;
-	else {
+	else{
 		nodeChainDestructor(target->link);
 		free(target);
 	}
 }
 
-void advancedLog(const char str[]) {
-	if (str = NULL) { fclose(fp); return; }
-	fprintf(fp, str);
+void enqueue(node ** table, int row, int val) {
+	node * seek;
+	node * newElement = makeNode(val);
+	
+	if (table[row] == NULL) {
+		table[row] = newElement;
+		return;
+	}
+	else {
+		while (seek != NULL) {
+			if (seek->link == NULL) {
+				seek->link = newElement;
+				break;
+			}
+			else {
+				seek = seek->link;
+			}
+		}
+	}
 }
