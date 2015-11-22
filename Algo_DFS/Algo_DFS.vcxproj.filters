@@ -23,4 +23,14 @@
     <Text Include="test-case1.txt" />
     <Text Include="test-case2.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="testData\2.out" />
+    <None Include="testData\3.in" />
+    <None Include="testData\3.out" />
+    <None Include="testData\4.in" />
+    <None Include="testData\4.out" />
+    <None Include="testData\1.in" />
+    <None Include="testData\1.out" />
+    <None Include="testData\2.in" />
+  </ItemGroup>
 </Project>

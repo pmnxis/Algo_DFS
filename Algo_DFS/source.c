@@ -209,6 +209,8 @@ node * getDFSpriority(bool * sharedLog, int * DepthTrack, node ** table, int row
 		//  이미 탐색한 항목으로 선정대상에서 제외.
 		if (sharedLog[seek->number] != 0) { seek = seek->link; continue; }
 
+		reattemp:
+
 		// instead of setDFSPriority 
 
 		/*
@@ -218,15 +220,10 @@ node * getDFSpriority(bool * sharedLog, int * DepthTrack, node ** table, int row
 
 		// end
 
-		if (currentMinDist == -1 && currentMinNum == -1) goto deferredFunc;
-		else if (currentMinDist > DepthTrack[seek->number]) goto deferredFunc;
-		else if (currentMinDist = DepthTrack[seek->number] && currentMinNum > seek->number) goto deferredFunc;
-
-
-		else{
-		seek = seek->link;
-		continue;
-		}
+		if (sharedLog[seek->number] == 0 &&currentMinDist == -1 && currentMinNum == -1) goto deferredFunc;
+		//  else if (currentMinDist > DepthTrack[seek->number]) goto deferredFunc;
+		else if (currentMinDist >= DepthTrack[seek->number] && currentMinNum >= seek->number) goto deferredFunc;
+		else{		seek = seek->link;		continue;		}
 		//  Go Lang에서 Defer이라는게 있길래 한번 분기 이름으로 써봄
 		//  DEFERRED Part
 	deferredFunc:
