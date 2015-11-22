@@ -22,32 +22,67 @@ typedef int bool;
 #define false 0
 #endif
 
+//  노드와 큐시스템의 최소 골격
 struct node {
 	struct node * link;
 	int number;
 }typedef node;
 
+//  최소단위 노드 생성
 node * makeNode(int _number);
+
+// table[_axis] ,_axis의 인접리스트에 노드 삽입
 void  insertNode(node ** table, int _axis, int _number);
+
+//  방문 동적리스트 생산
 bool * createSharedLog(int quanity);
+
+//   인접리스트를 qunity행만큼 만듭니다.
 node ** createTable(int quanity);
+
+//  삽입을 하기전 양방향에 명령을 하도록 변환
 void lincleLink(node ** table, int from, int dest);
+
+//  scanf를 탑재하여 자동으로 데이터베이스를 받습니다.
 void inputRule(node ** table);
+
+//  로깅 , 한칸(blank)를 만들수도있고 아니면 그냥 input을 뿌려줄수도잇고.
 void log(int input);
-void setDFSpriority(bool * sharedLog, int * DepthTrack, node ** table, int row);
+
+//  인접리스트를 탐색할때 인접리스트와 최소거리 테이블의 값을 고려하여 가장 조건에 부합하는 인접리스트의 노드를 리턴함
 node * getDFSpriority(bool * sharedLog, int * DepthTrack, node ** table, int row);
+
+//  DFS알고리즘을 수행하기 직전 초기 설정을 미리한후 DFS알고리즘을 재귀로 돌립니다. 
 void startDFScustom(bool * sharedLog, node ** table, int nodeAmount, int StartPoint);
+
+//  재귀형태의 DFS알고리즘 
 void DFScustom(bool * sharedLog, int * DepthTrack, node ** table, int row);
-void DFS_origin(bool * sharedLog, node ** table, int row);
+
+//  디버그용함수
 void logTable(node ** table, int nodeAmount);
+
+//  노드테이블 소멸자
 void nodeTableDestructor(node ** table, int nodeAmount);
+
+// 노드관계 소멸자
 void nodeChainDestructor(node * target);
+
+//  큐의 기본 골격 생성
 node ** createQue(int row);
+
+//  새로운 큐를 넣습니다. other ADT name (push)
 void enqueue(node ** table, int row, int val);
+
+//  큐를 꺼냅니다. other ADT name (pop)
 int dequeue(node ** table, int row);
+
+//  custom DFS 를 하기직전 BFS알고리즘을 활용한 최소 거리 테이블을 만듭니다.
 int * CreateDistTable_BFS(node ** table, int nodeAmount, int StartPoint);
+
+//  BFS재귀 알고리즘
 void routineBFS(node ** table, int * DepthTrack, bool * sharedLog, int row);
 
+//  프로그램 시작지점
 int main(){
 	int i = 0, inputAmount = 0 ,TableWidth = 0, EnterNodeNumber = 0;
 	node ** table;
@@ -61,11 +96,8 @@ int main(){
 	for (i = 0; i < inputAmount; i++) {
 		inputRule(table);
 	}
-	//  (bool * sharedLog, node ** table, int nodeAmount, int StartPoint) 
-	//logTable(table, TableWidth);
+
 	startDFScustom(sharedLog, table, TableWidth, EnterNodeNumber);
-//	BFS(sharedLog, table, EnterNodeNumber);
-//	DFS(sharedLog, table, EnterNodeNumber);
 
 	nodeTableDestructor(table, TableWidth);
 	free(sharedLog);
@@ -170,19 +202,6 @@ void log(int input) {
 	else printf(" ");
 }
 
-void setDFSpriority(bool * sharedLog, int * DepthTrack, node ** table, int row) {
-	node * seek;
-	int currentDist;
-
-	seek = table[row];
-	currentDist = DepthTrack[row];
-	while (1) {
-		if (seek == NULL)break;
-		if (sharedLog[seek->number] == 0 && DepthTrack[seek->number] == -1)	DepthTrack[seek->number] = currentDist + 1;
-		seek = seek->link;
-	}
-}
-
 node * getDFSpriority(bool * sharedLog, int * DepthTrack, node ** table, int row) {
 	node * seek, *currentMin;
 	int currentMinDist, currentMinNum;
@@ -192,18 +211,22 @@ node * getDFSpriority(bool * sharedLog, int * DepthTrack, node ** table, int row
 	currentMinDist = -1;
 	currentMinNum = -1;
 	currentMin = NULL;
-
-	while (1) {
-		if (seek == NULL)break;
-		//  이미 탐색한 항목으로 선정대상에서 제외.
+	
+	while (seek != NULL) {
+		//  탐색포인터가 NULL이 아닌경우에만 WHILE이 동작합니다.
 		if (sharedLog[seek->number] != 0) { seek = seek->link; continue; }
+		//  사용할수 없는 노드는 그냥 패스해버립니다.
+		//  해당 조건 : 이미 탐색한 노드
+
+		//  deferredFunc분기 : 최적의 조건에 합당하는 노드를 현재 탐색중인 노드로 교체한다.
 
 		if (currentMinDist == -1) goto deferredFunc;
-
+		//  현재최적보다 최소거리거나 같거나 정점숫자가 작으면 교체
 		if (currentMinDist >= DepthTrack[seek->number] && currentMinNum > seek->number) goto deferredFunc;
-
+		//  현재최적보다 최소거리면  교체 
 		if (currentMinDist > DepthTrack[seek->number]) goto deferredFunc;
 
+		//  인접행렬에서 다음 노드를 탐색한다.
 		seek = seek->link; continue;
 
 		//  Go Lang에서 Defer이라는게 있길래 한번 분기 이름으로 써봄
@@ -218,24 +241,18 @@ node * getDFSpriority(bool * sharedLog, int * DepthTrack, node ** table, int row
 	}
 	//  while end
 
+	//  만약 최적의 정점을 못찾으면 그냥 NULL을 리턴하고 아니면 현재최적의 노드주소값을 리턴
 	if (currentMinDist == -1 || currentMinNum == -1)return NULL;
 	else return currentMin;
 }
 
 void startDFScustom(bool * sharedLog, node ** table, int nodeAmount, int StartPoint) {
 	int ii;
-	/*
-	int * DepthTrack = (int *)malloc(sizeof(int)*(nodeAmount + 1));
-	for (ii = 0; ii <= nodeAmount; ii++) {
-		DepthTrack[ii] = -1;
-	}
-	*/
-
-	//  int * CreateDistTable_BFS(node ** table, int nodeAmount, int StartPoint)
-
+	//  BFS알고리즘을 사용하여 DepthTrack , 최소거리 테이블을 만듭니다.
 	int * DepthTrack = CreateDistTable_BFS(table, nodeAmount, StartPoint);
+	//  DFS 재귀를 시작합니다.
 	DFScustom(sharedLog, DepthTrack, table, StartPoint);
-	//for (ii = 0; ii <= nodeAmount; ii++)printf("\n%d  - %d", ii, DepthTrack[ii]);
+	//  최소 거리 테이블을 소멸시킵니다.
 	free(DepthTrack);
 	return;
 }
@@ -244,6 +261,7 @@ void DFScustom(bool * sharedLog, int * DepthTrack, node ** table, int row) {
 	node * seek, *newPortal;
 	int currentDist;
 
+	//  방문한거 아니면 출력함
 	if (sharedLog[row] == 0) { 
 		log(row);
 		sharedLog[row] = 1;
@@ -253,15 +271,13 @@ void DFScustom(bool * sharedLog, int * DepthTrack, node ** table, int row) {
 	seek = table[row];
 	currentDist = sharedLog[row];
 
-	// setDFSpriority(sharedLog, DepthTrack, table, row);
-
 	seek = table[row];
 	while (1) {
 		if (seek == NULL)return;
 
+		//  인접행렬에서 재귀할 정점찾고 없으면 그냥 끝냄, 없어질때까지 계속 반복
 		newPortal = getDFSpriority(sharedLog, DepthTrack, table, row);
 		if (newPortal == NULL)return;
-		//  else if (sharedLog[newPortal->number] == 0){
 		else{
 			log(-1);
 			DFScustom(sharedLog, DepthTrack, table, newPortal->number);
@@ -271,24 +287,7 @@ void DFScustom(bool * sharedLog, int * DepthTrack, node ** table, int row) {
 	return;
 }
 
-void DFS_origin(bool * sharedLog, node ** table, int row) {
-	node * seek = table[row];
-	int i = 0;
-
-	log(row);
-	sharedLog[row] = 1;
-
-	while (1) {
-		if (seek == NULL)return;
-
-		if (sharedLog[seek->number] == 0) {
-			log(-1);
-			DFS_origin(sharedLog, table, seek->number);
-		}
-		seek = seek->link;
-	}
-}
-
+//  디버그용 함수
 void logTable(node ** table, int nodeAmount) {
 	int logcount, i;
 	node * temp;
@@ -370,6 +369,7 @@ int dequeue(node ** table, int row) {
 	return bye;
 }
 
+//  최소거리 테이블 생성시작하는 함수
 int * CreateDistTable_BFS(node ** table, int nodeAmount, int StartPoint) {
 	int ii;
 	int * DepthTrack = (int *)calloc(1,sizeof(int)*(nodeAmount + 1));
@@ -378,21 +378,29 @@ int * CreateDistTable_BFS(node ** table, int nodeAmount, int StartPoint) {
 		DepthTrack[ii] = -1;
 		sharedLog[ii] = 0;
 	}
+	//  지정해둔 초기값으로 둘다 초기화
+	//  pdf에 시작노드의 거리와 시작노드의 거리, 즉 자기자신의 거리를 0으로 간주했기에.
+	//  스타트포인트를 0으로 지정하고 그다음부터 1,2,3,4,5, 이렇게 늘어남, 방문하지않은노드는 -1로 표기
 	DepthTrack[StartPoint] = 0;
+	
+	//재귀시작
 	routineBFS(table, DepthTrack, sharedLog, StartPoint);
+	// 소멸및 테이블주소 줌
 	free(sharedLog);
 	return DepthTrack;
 }
 
+//  재귀 알고리즘
 void routineBFS(node ** table, int * DepthTrack, bool * sharedLog,  int row) {
 	node ** currentQue = createQue(0);
-	node * seek;
+	node * seek;  /*  자기주변 간선을 탐색할때 쓰는 임시 노드포인터  */
 	int currentDist;
-	int gear = 0;
+	int gear = 0;  /*  BFS 를 위해 넣엇던 큐를 차례대로 꺼낼때 간선에 이어지는정점의 숫자를 임시로 쓰기위해 사용  */
 	
 	sharedLog[row] = 1;
 	seek = table[row];
 	currentDist = DepthTrack[row];
+	//  자기주변의 모든 간선을 탐색하되, 탐색하지않앗거나 새 최소거리가 더 작으면 값을대체하거나 추가함.
 	while (seek != NULL) {
 		if (DepthTrack[seek->number] == -1 || DepthTrack[seek->number] > currentDist + 1) {
 			DepthTrack[seek->number] = currentDist + 1;
@@ -401,6 +409,7 @@ void routineBFS(node ** table, int * DepthTrack, bool * sharedLog,  int row) {
 		seek = seek->link;
 	}
 
+	//  디큐를 계속 하여 0이 나올때까지(비엇다 신호), 재귀를 다시실행함
 	while (gear = dequeue(currentQue, 0)) routineBFS(table, DepthTrack, sharedLog, gear);
 	return;
 }
